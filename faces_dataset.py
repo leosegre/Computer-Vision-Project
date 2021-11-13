@@ -32,7 +32,7 @@ class FacesDataset(Dataset):
         img = Image.open(os.path.join(self.root_path, label_str, all_image_names[index]))
         if self.transform is not None:
             img = self.transform(img)
-        return tuple((img, label))
+        return img, label
 
     def __len__(self):
         """Return the number of images in the dataset."""

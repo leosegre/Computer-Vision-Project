@@ -68,18 +68,19 @@ class Trainer:
             self.optimizer.step()
 
             nof_samples += self.batch_size
-            correct_labeled_samples += (preds.argmax(axis=1) == targets).sum()
+            correct_labeled_samples += (preds.argmax(axis=1) == targets).sum().item()
             accuracy = correct_labeled_samples / nof_samples
-            total_loss += loss
+            total_loss += loss.item()
             avg_loss = total_loss / (batch_idx+1)
 
+            """-------------------------"""
             if batch_idx % print_every == 0 or \
                     batch_idx == len(train_dataloader) - 1:
                 print(f'Epoch [{self.epoch:03d}] | Loss: {avg_loss:.3f} | '
                       f'Acc: {accuracy:.2f}[%] '
                       f'({correct_labeled_samples}/{nof_samples})')
 
-        return avg_loss, accuracy
+        return float(avg_loss), float(accuracy)
 
     def evaluate_model_on_dataloader(
             self, dataset: torch.utils.data.Dataset) -> tuple[float, float]:
@@ -111,8 +112,9 @@ class Trainer:
             nof_samples += self.batch_size
 
             # correct_labeled_samples += abs(torch.round(preds) - targets).sum()
+            correct_labeled_samples += (preds.argmax(axis=1) == targets).sum().item()
             accuracy = correct_labeled_samples / nof_samples
-            total_loss += loss
+            total_loss += loss.item()
             avg_loss = total_loss / (batch_idx+1)
 
             if batch_idx % print_every == 0 or batch_idx == len(dataloader) - 1:
@@ -120,7 +122,7 @@ class Trainer:
                       f'Acc: {accuracy:.2f}[%] '
                       f'({correct_labeled_samples}/{nof_samples})')
 
-        return avg_loss, accuracy
+        return float(avg_loss), float(accuracy)
 
     def validate(self):
         """Evaluate the model performance."""
