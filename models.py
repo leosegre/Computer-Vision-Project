@@ -9,6 +9,7 @@ from xcpetion import build_xception_backbone
 
 class SimpleNet(nn.Module):
     """Simple Convolutional and Fully Connect network."""
+
     def __init__(self):
         super().__init__()
         self.conv1 = nn.Conv2d(3, 6, kernel_size=(7, 7))
@@ -41,5 +42,7 @@ def get_xception_based_model() -> nn.Module:
     (2) Override `custom_network`'s fc attribute with the binary
     classification head stated in the exercise.
     """
-    """INSERT YOUR CODE HERE, overrun return."""
-    return SimpleNet()
+    model = build_xception_backbone()
+    model.fc = nn.Sequential(nn.Linear(2048, 1000), model.relu, nn.Linear(1000, 256), model.relu, nn.Linear(256, 64), \
+               model.relu, nn.Linear(64, 2))
+    return model

@@ -67,7 +67,7 @@ class Trainer:
             loss.backward()
             self.optimizer.step()
 
-            nof_samples += self.batch_size
+            nof_samples += len(targets)
             correct_labeled_samples += (preds.argmax(axis=1) == targets).sum().item()
             accuracy = correct_labeled_samples / nof_samples
             total_loss += loss.item()
@@ -109,7 +109,7 @@ class Trainer:
             with torch.no_grad():
                 preds = self.model(inputs)
             loss = self.criterion(preds, targets)
-            nof_samples += self.batch_size
+            nof_samples += len(targets)
 
             # correct_labeled_samples += abs(torch.round(preds) - targets).sum()
             correct_labeled_samples += (preds.argmax(axis=1) == targets).sum().item()
