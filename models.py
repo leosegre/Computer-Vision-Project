@@ -42,7 +42,9 @@ def get_xception_based_model() -> nn.Module:
     (2) Override `custom_network`'s fc attribute with the binary
     classification head stated in the exercise.
     """
-    model = build_xception_backbone()
+    model = build_xception_backbone(pretrained=True)
+    for parameter in model.parameters():
+        parameter.requires_grad = False
     model.fc = nn.Sequential(nn.Linear(2048, 1000), model.relu, nn.Linear(1000, 256), model.relu, nn.Linear(256, 64), \
                model.relu, nn.Linear(64, 2))
     return model

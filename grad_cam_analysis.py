@@ -11,6 +11,9 @@ from torch.utils.data import DataLoader
 from common import FIGURES_DIR
 from utils import load_dataset, load_model
 
+from pytorch_grad_cam import GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM, EigenCAM
+from pytorch_grad_cam.utils.image import show_cam_on_image
+
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -52,7 +55,23 @@ def get_grad_cam_visualization(test_dataset: torch.utils.data.Dataset,
         of batch size 1, it's a tensor of shape (1,)).
     """
     """INSERT YOUR CODE HERE, overrun return."""
-    return np.random.rand(256, 256, 3), torch.randint(0, 2, (1,))
+
+    target_layer = [model.conv3]
+    for parameter in model.parameters():
+        parameter.requires_grad = True
+    dataloader = DataLoader(test_dataset,
+                            batch_size=1,
+                            shuffle=True)
+    input_tensor, true_label = next(iter(dataloader))
+    cam = GradCAM(model=model, target_layers=target_layer, use_cuda=False)
+    grayscale_cam = cam(input_tensor=input_tensor, target_category=true_label)
+    grayscale_cam = grayscale_cam[0, :]
+    rgb_img = input_tensor[0, :].cpu().detach().numpy()
+    rgb_img = np.array((rgb_img - np.min(rgb_img)) / (np.max(rgb_img) - np.min(rgb_img)))
+    rgb_img = np.moveaxis(rgb_img, 0, -1)
+    visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
+
+    return visualization, true_label
 
 
 def main():
